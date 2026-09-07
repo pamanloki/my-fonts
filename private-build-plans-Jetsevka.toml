@@ -9,7 +9,23 @@ exportGlyphNames = false
 inherits = "ss14"
 
 [buildPlans.Jetsevka.variants.design]
-zero = "tall-slashed"
+three = "two-arcs"
+four = "closed-serifless"
+five = "upright-flat-hook-serifless"
+seven = "straight-serifless"
+zero = "slashed"
+capital-b = "more-asymmetric-serifless"
+capital-e = "serifless"
+capital-j = "serifed"
+capital-q = "detached-bend-tailed"
+capital-w = "straight-serifless"
+a = "single-storey-serifed"
+g = "single-storey-serifless"
+l = "serifed-flat-tailed"
+u = "toothed-serifless"
+w = "straight-serifless"
+y = "straight-turn-serifless"
+at = "compact"
 
 [buildPlans.Jetsevka.weights.Regular]
 shape = 400
