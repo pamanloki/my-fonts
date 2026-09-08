@@ -43,7 +43,7 @@ menu = 500
 css = 500
 
 [buildPlans.Jetsevka.widths.Normal]
-shape = 500
+shape = 528
 menu = 5
 css = "normal"
 
