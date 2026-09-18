@@ -12,6 +12,14 @@ on:
         type: boolean
         required: false
         default: false
+  # Editing a build plan (or the font list) on main triggers an automatic
+  # rebuild. The Iosevka version is unchanged, so the run is force-rebuilt to
+  # overwrite the existing release instead of skipping it.
+  push:
+    branches: [main]
+    paths:
+      - "private-build-plans-*.toml"
+      - "fonts.json"
   schedule:
     - cron: "0 0 * * 1"
 
@@ -32,6 +40,7 @@ jobs:
       version: ${{ steps.check.outputs.version }}
       tag: ${{ steps.check.outputs.tag }}
       nf_tag: ${{ steps.check.outputs.nf_tag }}
+      force: ${{ steps.check.outputs.force }}
     permissions:
       contents: read
     steps:
@@ -62,10 +71,19 @@ jobs:
             exit 1
           fi
 
+          # Force a rebuild (overwrite existing releases) when explicitly
+          # requested, or when a push edited a build plan / the font list.
+          if [ "${{ inputs.force_rebuild }}" = "true" ] || [ "${{ github.event_name }}" = "push" ]; then
+            FORCE=true
+          else
+            FORCE=false
+          fi
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "nf_tag=$NF_TAG" >> "$GITHUB_OUTPUT"
-          echo "✓ Iosevka: $TAG | Nerd Fonts: $NF_TAG"
+          echo "force=$FORCE" >> "$GITHUB_OUTPUT"
+          echo "✓ Iosevka: $TAG | Nerd Fonts: $NF_TAG | force=$FORCE"
 
           {
             echo "## Build configuration"
@@ -74,7 +92,8 @@ jobs:
             echo "| --- | --- |"
             echo "| Iosevka | \`$TAG\` |"
             echo "| Nerd Fonts | \`$NF_TAG\` |"
-            echo "| Force rebuild | \`${{ inputs.force_rebuild || false }}\` |"
+            echo "| Trigger | \`${{ github.event_name }}\` |"
+            echo "| Force rebuild | \`$FORCE\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   # ──────────────────────────────────────────────
@@ -162,7 +181,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ matrix.font.name }}-v${{ needs.detect-version.outputs.version }}
-          FORCE: ${{ inputs.force_rebuild || false }}
+          FORCE: ${{ needs.detect-version.outputs.force }}
         run: |
           if [ "$FORCE" = "true" ]; then
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -238,7 +257,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: Iosevka-v${{ needs.detect-version.outputs.version }}
-          FORCE: ${{ inputs.force_rebuild || false }}
+          FORCE: ${{ needs.detect-version.outputs.force }}
         run: |
           if [ "$FORCE" = "true" ]; then
             echo "exists=false" >> "$GITHUB_OUTPUT"
