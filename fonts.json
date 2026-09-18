@@ -1,4 +1,8 @@
 [
-  { "name": "Iosevka", "plan": null, "title": "Iosevka (patched with Nerd Fonts)" },
-  { "name": "Jetsevka", "plan": "Jetsevka", "title": "Jetsevka" }
+  {
+    "name": "Iosevka",
+    "plan": null,
+    "title": "Iosevka (patched with Nerd Fonts)"
+  },
+  { "name": "Firax", "plan": "Firax", "title": "Firax" }
 ]
